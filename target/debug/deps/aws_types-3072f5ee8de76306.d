@@ -1,0 +1,18 @@
+/home/sergio/projects/rusty-serverless-api/target/debug/deps/libaws_types-3072f5ee8de76306.rmeta: /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/lib.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/app_name.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/build_metadata.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/endpoint_config.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/origin.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/os_shim_internal.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/region.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/request_id.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/sdk_config.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/service_config.rs /home/sergio/projects/rusty-serverless-api/target/debug/build/aws-types-9290e1ade9562b7f/out/build_env.rs
+
+/home/sergio/projects/rusty-serverless-api/target/debug/deps/aws_types-3072f5ee8de76306.d: /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/lib.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/app_name.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/build_metadata.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/endpoint_config.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/origin.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/os_shim_internal.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/region.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/request_id.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/sdk_config.rs /home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/service_config.rs /home/sergio/projects/rusty-serverless-api/target/debug/build/aws-types-9290e1ade9562b7f/out/build_env.rs
+
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/lib.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/app_name.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/build_metadata.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/endpoint_config.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/origin.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/os_shim_internal.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/region.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/request_id.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/sdk_config.rs:
+/home/sergio/.cargo/registry/src/index.crates.io-6f17d22bba15001f/aws-types-1.3.3/src/service_config.rs:
+/home/sergio/projects/rusty-serverless-api/target/debug/build/aws-types-9290e1ade9562b7f/out/build_env.rs:
+
+# env-dep:CARGO_PKG_VERSION=1.3.3
+# env-dep:OUT_DIR=/home/sergio/projects/rusty-serverless-api/target/debug/build/aws-types-9290e1ade9562b7f/out

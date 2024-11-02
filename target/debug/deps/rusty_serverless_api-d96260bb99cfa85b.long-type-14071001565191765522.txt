@@ -1,0 +1,1 @@
+ServiceFn<impl Fn(LambdaEvent<delete::DeleteRequest>) -> impl Future<Output = Result<DeleteResponse, Box<(dyn StdError + Send + Sync + 'static)>>>>
