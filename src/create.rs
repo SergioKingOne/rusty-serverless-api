@@ -1,22 +1,25 @@
-use aws_sdk_dynamodb::model::AttributeValue;
+use aws_config::BehaviorVersion;
+use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::{Client, Error as DynamoError};
-use lambda_runtime::{handler_fn, Context, Error};
+use lambda_runtime::Context;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
+use crate::error::Error;
+
 #[derive(Deserialize)]
-struct CreateRequest {
+pub struct CreateRequest {
     id: String,
     data: String,
 }
 
 #[derive(Serialize)]
-struct CreateResponse {
+pub struct CreateResponse {
     message: String,
 }
 
 pub async fn handler(event: CreateRequest, _: Context) -> Result<CreateResponse, Error> {
-    let config = aws_config::load_from_env().await;
+    let config = aws_config::load_defaults(BehaviorVersion::v2024_03_28()).await;
     let client = Client::new(&config);
 
     let mut item = HashMap::new();
@@ -36,6 +39,6 @@ pub async fn handler(event: CreateRequest, _: Context) -> Result<CreateResponse,
     })
 }
 
-pub fn create_function() -> impl Fn(CreateRequest, Context) -> _ {
-    handler_fn(handler)
-}
+// pub fn create_function() -> impl Fn(CreateRequest, Context) -> _ {
+//     handler_fn(handler)
+// }

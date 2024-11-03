@@ -7,13 +7,13 @@ use std::collections::HashMap;
 use std::future::Future;
 
 #[derive(Deserialize)]
-struct UpdateRequest {
+pub struct UpdateRequest {
     id: String,
     data: String,
 }
 
 #[derive(Serialize)]
-struct UpdateResponse {
+pub struct UpdateResponse {
     message: String,
 }
 
