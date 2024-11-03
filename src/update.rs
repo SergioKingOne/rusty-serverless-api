@@ -17,7 +17,7 @@ pub struct UpdateResponse {
     message: String,
 }
 
-async fn handler(event: LambdaEvent<UpdateRequest>) -> Result<UpdateResponse, Error> {
+pub async fn handler(event: LambdaEvent<UpdateRequest>) -> Result<UpdateResponse, Error> {
     let config = aws_config::load_defaults(BehaviorVersion::v2024_03_28()).await;
     let client = Client::new(&config);
 
