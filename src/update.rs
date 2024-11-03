@@ -1,8 +1,10 @@
-use aws_sdk_dynamodb::model::AttributeValue;
+use aws_config::BehaviorVersion;
+use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::{Client, Error as DynamoError};
-use lambda_runtime::{handler_fn, Context, Error};
+use lambda_runtime::{service_fn, Error, LambdaEvent, Service};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::future::Future;
 
 #[derive(Deserialize)]
 struct UpdateRequest {
@@ -15,17 +17,20 @@ struct UpdateResponse {
     message: String,
 }
 
-pub async fn handler(event: UpdateRequest, _: Context) -> Result<UpdateResponse, Error> {
-    let config = aws_config::load_from_env().await;
+async fn handler(event: LambdaEvent<UpdateRequest>) -> Result<UpdateResponse, Error> {
+    let config = aws_config::load_defaults(BehaviorVersion::v2024_03_28()).await;
     let client = Client::new(&config);
 
     let mut expression_attribute_values = HashMap::new();
-    expression_attribute_values.insert(":data".to_string(), AttributeValue::S(event.data.clone()));
+    expression_attribute_values.insert(
+        ":data".to_string(),
+        AttributeValue::S(event.payload.data.clone()),
+    );
 
     client
         .update_item()
         .table_name("RustyServerlessAPI")
-        .key("id", AttributeValue::S(event.id.clone()))
+        .key("id", AttributeValue::S(event.payload.id.clone()))
         .update_expression("SET data = :data")
         .set_expression_attribute_values(Some(expression_attribute_values))
         .send()
@@ -33,10 +38,13 @@ pub async fn handler(event: UpdateRequest, _: Context) -> Result<UpdateResponse,
         .map_err(DynamoError::from)?;
 
     Ok(UpdateResponse {
-        message: format!("Item with id {} updated.", event.id),
+        message: format!("Item with id {} updated.", event.payload.id),
     })
 }
 
-pub fn update_function() -> impl Fn(UpdateRequest, Context) -> _ {
-    handler_fn(handler)
+pub fn update_function() -> impl FnMut(
+    LambdaEvent<UpdateRequest>,
+) -> Box<dyn Future<Output = Result<UpdateResponse, Error>> + Send> {
+    let mut func = service_fn(handler);
+    move |event| Box::new(func.call(event))
 }
