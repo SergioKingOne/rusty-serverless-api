@@ -1,5 +1,25 @@
 # Rust
 target/
+**/*.rs.bk
+Cargo.lock
 
 # Terraform
 .terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraformrc
+terraform.rc
+
+# Ansible
+*.retry
+
+# IDE
+.idea/
+.vscode/
+
+# AWS
+.aws/
+
+# Build artifacts
+terraform/lambda/lambda_function.zip

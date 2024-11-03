@@ -1,0 +1,105 @@
+---
+- name: Setup Development Environment
+  hosts: dev
+  become: yes
+  vars:
+    aws_region: "{{ aws_region | default('us-east-1') }}"
+    project_root: "{{ playbook_dir }}/.."
+    terraform_dir: "{{ project_root }}/terraform"
+    rust_version: "1.70.0"
+
+  tasks:
+    - name: Install system dependencies
+      apt:
+        name:
+          - build-essential
+          - curl
+          - unzip
+          - python3-pip
+          - git
+        state: present
+        update_cache: yes
+
+    - name: Install AWS CLI
+      pip:
+        name: awscli
+        state: present
+
+    - name: Install Terraform
+      block:
+        - name: Download Terraform
+          get_url:
+            url: "https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_linux_amd64.zip"
+            dest: /tmp/terraform.zip
+            mode: '0644'
+
+        - name: Create Terraform directory
+          file:
+            path: /usr/local/bin
+            state: directory
+            mode: '0755'
+
+        - name: Extract Terraform
+          unarchive:
+            src: /tmp/terraform.zip
+            dest: /usr/local/bin
+            remote_src: yes
+            mode: '0755'
+
+    - name: Install Rust
+      block:
+        - name: Download Rustup
+          get_url:
+            url: https://sh.rustup.rs
+            dest: /tmp/rustup.sh
+            mode: '0755'
+
+        - name: Install Rust
+          shell: /tmp/rustup.sh -y
+          args:
+            creates: ~/.cargo/bin/rustc
+
+    - name: Install cargo-lambda
+      shell: cargo install cargo-lambda
+      args:
+        creates: ~/.cargo/bin/cargo-lambda
+
+    - name: Configure AWS credentials
+      blockinfile:
+        path: ~/.aws/credentials
+        create: yes
+        mode: '0600'
+        block: |
+          [default]
+          aws_access_key_id={{ aws_access_key }}
+          aws_secret_access_key={{ aws_secret_key }}
+          region={{ aws_region }}
+
+    - name: Build Rust Lambda function
+      shell: |
+        cd {{ project_root }}
+        cargo lambda build --release
+      args:
+        creates: "{{ project_root }}/target/lambda/release/bootstrap"
+
+    - name: Ensure Lambda function directory exists
+      file:
+        path: "{{ terraform_dir }}/lambda"
+        state: directory
+        mode: '0755'
+
+    - name: Copy Lambda function to Terraform directory
+      copy:
+        src: "{{ project_root }}/target/lambda/release/bootstrap"
+        dest: "{{ terraform_dir }}/lambda/put_your_lambda_fn_here"
+        mode: '0755'
+
+    - name: Initialize and apply Terraform
+      shell: |
+        cd {{ terraform_dir }}
+        terraform init
+        terraform apply -auto-approve
+      environment:
+        AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+        AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+        AWS_DEFAULT_REGION: "{{ aws_region }}"
