@@ -58,17 +58,6 @@
       args:
         creates: ~/.cargo/bin/cargo-lambda
 
-    - name: Configure AWS credentials
-      blockinfile:
-        path: ~/.aws/credentials
-        create: yes
-        mode: '0600'
-        block: |
-          [default]
-          aws_access_key_id={{ aws_access_key }}
-          aws_secret_access_key={{ aws_secret_key }}
-          region={{ aws_region }}
-
     - name: Build Rust Lambda function
       shell: |
         cd {{ project_root }}
