@@ -13,7 +13,7 @@ variable "api_name" {
 variable "lambda_role_name" {
   description = "IAM role name for Lambda"
   type        = string
-  default     = "rusty_lambda_role"
+  default     = "RustyLambdaRole"
 }
 
 variable "dynamodb_table_name" {
