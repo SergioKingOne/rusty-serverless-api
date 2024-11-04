@@ -3,10 +3,10 @@
   hosts: dev
   become: yes
   vars:
-    aws_region: "{{ aws_region | default('us-east-1') }}"
     project_root: "{{ playbook_dir }}/.."
     terraform_dir: "{{ project_root }}/terraform"
-    rust_version: "1.70.0"
+    rust_version: "1.82.0"
+    terraform_version: "1.9.8"
 
   tasks:
     - name: Install system dependencies
@@ -29,22 +29,16 @@
       block:
         - name: Download Terraform
           get_url:
-            url: "https://releases.hashicorp.com/terraform/1.5.0/terraform_1.5.0_linux_amd64.zip"
+            url: "https://releases.hashicorp.com/terraform/{{ terraform_version }}/terraform_{{ terraform_version }}_linux_amd64.zip"
             dest: /tmp/terraform.zip
             mode: '0644'
-
-        - name: Create Terraform directory
-          file:
-            path: /usr/local/bin
-            state: directory
-            mode: '0755'
 
         - name: Extract Terraform
           unarchive:
             src: /tmp/terraform.zip
             dest: /usr/local/bin
-            remote_src: yes
             mode: '0755'
+            remote_src: yes
 
     - name: Install Rust
       block:
@@ -91,15 +85,5 @@
     - name: Copy Lambda function to Terraform directory
       copy:
         src: "{{ project_root }}/target/lambda/release/bootstrap"
-        dest: "{{ terraform_dir }}/lambda/put_your_lambda_fn_here"
+        dest: "{{ terraform_dir }}/lambda/lambda_function.zip"
         mode: '0755'
-
-    - name: Initialize and apply Terraform
-      shell: |
-        cd {{ terraform_dir }}
-        terraform init
-        terraform apply -auto-approve
-      environment:
-        AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
-        AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
-        AWS_DEFAULT_REGION: "{{ aws_region }}"
