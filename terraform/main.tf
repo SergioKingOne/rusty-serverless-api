@@ -11,6 +11,10 @@ resource "aws_iam_role" "lambda_role" {
       }
     }]
   })
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_policy" "lambda_policy" {
@@ -37,6 +41,10 @@ resource "aws_iam_policy" "lambda_policy" {
       }
     ]
   })
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_attach" {
@@ -52,6 +60,11 @@ resource "aws_dynamodb_table" "rusty_table" {
   attribute {
     name = "id"
     type = "S"
+  }
+
+  lifecycle {
+    prevent_destroy       = false
+    create_before_destroy = true
   }
 }
 
@@ -107,20 +120,94 @@ resource "aws_lambda_permission" "api_gateway" {
   source_arn    = "${aws_api_gateway_rest_api.rusty_api.execution_arn}/*/*"
 }
 
+resource "aws_api_gateway_method" "post" {
+  rest_api_id   = aws_api_gateway_rest_api.rusty_api.id
+  resource_id   = aws_api_gateway_resource.resource.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "get" {
+  rest_api_id   = aws_api_gateway_rest_api.rusty_api.id
+  resource_id   = aws_api_gateway_resource.resource.id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "put" {
+  rest_api_id   = aws_api_gateway_rest_api.rusty_api.id
+  resource_id   = aws_api_gateway_resource.resource.id
+  http_method   = "PUT"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "delete" {
+  rest_api_id   = aws_api_gateway_rest_api.rusty_api.id
+  resource_id   = aws_api_gateway_resource.resource.id
+  http_method   = "DELETE"
+  authorization = "NONE"
+}
+
+# Create corresponding integrations for each method
+resource "aws_api_gateway_integration" "post" {
+  rest_api_id             = aws_api_gateway_rest_api.rusty_api.id
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.post.http_method
+  type                    = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri                     = aws_lambda_function.rusty_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "get" {
+  rest_api_id             = aws_api_gateway_rest_api.rusty_api.id
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.get.http_method
+  type                    = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri                     = aws_lambda_function.rusty_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "put" {
+  rest_api_id             = aws_api_gateway_rest_api.rusty_api.id
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.put.http_method
+  type                    = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri                     = aws_lambda_function.rusty_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "delete" {
+  rest_api_id             = aws_api_gateway_rest_api.rusty_api.id
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.delete.http_method
+  type                    = "AWS_PROXY"
+  integration_http_method = "POST"
+  uri                     = aws_lambda_function.rusty_lambda.invoke_arn
+}
+
+# Update the deployment triggers to include all methods and integrations
 resource "aws_api_gateway_deployment" "deployment" {
   depends_on = [
-    aws_api_gateway_integration.integration
+    aws_api_gateway_integration.post,
+    aws_api_gateway_integration.get,
+    aws_api_gateway_integration.put,
+    aws_api_gateway_integration.delete
   ]
 
   rest_api_id = aws_api_gateway_rest_api.rusty_api.id
-
-  stage_name = "prod"
+  stage_name  = "prod"
 
   triggers = {
     redeployment = sha1(jsonencode([
       aws_api_gateway_resource.resource.id,
-      aws_api_gateway_method.method.id,
-      aws_api_gateway_integration.integration.id
+      aws_api_gateway_method.post.id,
+      aws_api_gateway_method.get.id,
+      aws_api_gateway_method.put.id,
+      aws_api_gateway_method.delete.id,
+      aws_api_gateway_integration.post.id,
+      aws_api_gateway_integration.get.id,
+      aws_api_gateway_integration.put.id,
+      aws_api_gateway_integration.delete.id
     ]))
   }
 
