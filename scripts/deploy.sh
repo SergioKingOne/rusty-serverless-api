@@ -21,18 +21,29 @@ export TF_VAR_lambda_role_name=$AWS_LAMBDA_ROLE_NAME
 export TF_VAR_dynamodb_table_name=$AWS_DYNAMODB_TABLE_NAME
 export TF_VAR_api_name=$AWS_API_NAME
 
-# Build the project
-cargo lambda build --release
+# Clean up any existing artifacts
+rm -f bootstrap lambda_function.zip
+rm -f terraform/lambda/lambda_function.zip
+
+# Build using Docker
+docker build -t rust-lambda-builder .
+docker run --rm -v "$(pwd)":/app rust-lambda-builder \
+    bash -c "cargo build --release && cp target/release/bootstrap . && zip lambda_function.zip bootstrap"
 
 # Create lambda directory if it doesn't exist
 mkdir -p terraform/lambda
 
-# zip the binary and copy to terraform/lambda
-cd target/lambda/rusty_serverless_api
-zip -j lambda_function.zip bootstrap
-mv lambda_function.zip ../../../terraform/lambda/
+# Move the zip file to terraform/lambda (with force override)
+mv -f lambda_function.zip terraform/lambda/
 
-cd ../../../terraform
+cd terraform
 
 terraform init
 terraform apply -auto-approve
+
+# Cleanup
+cd ..
+rm -f bootstrap
+docker rmi rust-lambda-builder -f
+
+echo "Deployment complete and cleanup finished"

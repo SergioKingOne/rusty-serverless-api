@@ -28,7 +28,7 @@ pub async fn handler(event: CreateRequest, _: Context) -> Result<CreateResponse,
 
     client
         .put_item()
-        .table_name("RustyServerlessAPI")
+        .table_name("rusty-serverless-dynamodb-table")
         .set_item(Some(item))
         .send()
         .await
