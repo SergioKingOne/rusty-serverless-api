@@ -25,11 +25,11 @@ graph LR
         IAM
     end
 
-    style Client fill:#f9f,stroke:#333,stroke-width:2px
-    style AG fill:#ff9,stroke:#333,stroke-width:2px
-    style LF fill:#9f9,stroke:#333,stroke-width:2px
-    style DB fill:#99f,stroke:#333,stroke-width:2px
-    style IAM fill:#f99,stroke:#333,stroke-width:2px
+    style Client fill:#e6b3e6,stroke:#333,stroke-width:2px,color:#333
+    style AG fill:#e6e6b3,stroke:#333,stroke-width:2px,color:#333
+    style LF fill:#b3e6b3,stroke:#333,stroke-width:2px,color:#333
+    style DB fill:#b3b3e6,stroke:#333,stroke-width:2px,color:#333
+    style IAM fill:#e6b3b3,stroke:#333,stroke-width:2px,color:#333
 ```
 
 This diagram shows:
