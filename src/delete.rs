@@ -32,7 +32,3 @@ pub async fn handler(event: DeleteRequest, _: Context) -> Result<DeleteResponse,
         message: format!("Item with id {} deleted.", event.id),
     })
 }
-
-// pub fn delete_function() -> impl Fn(DeleteRequest, Context) -> _ {
-//     handler_fn(handler)
-// }

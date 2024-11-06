@@ -1,10 +1,9 @@
 use aws_config::BehaviorVersion;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::{Client, Error as DynamoError};
-use lambda_runtime::{service_fn, Error, LambdaEvent, Service};
+use lambda_runtime::{Error, LambdaEvent};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::future::Future;
 
 #[derive(Deserialize)]
 pub struct UpdateRequest {
@@ -40,11 +39,4 @@ pub async fn handler(event: LambdaEvent<UpdateRequest>) -> Result<UpdateResponse
     Ok(UpdateResponse {
         message: format!("Item with id {} updated.", event.payload.id),
     })
-}
-
-pub fn update_function() -> impl FnMut(
-    LambdaEvent<UpdateRequest>,
-) -> Box<dyn Future<Output = Result<UpdateResponse, Error>> + Send> {
-    let mut func = service_fn(handler);
-    move |event| Box::new(func.call(event))
 }

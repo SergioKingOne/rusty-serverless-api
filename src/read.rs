@@ -57,7 +57,3 @@ pub async fn handler(event: ReadRequest, _: Context) -> Result<ReadResponse, Err
         )))
     }
 }
-
-// pub fn read_function() -> impl Fn(ReadRequest, Context) -> _ {
-//     handler_fn(handler)
-// }

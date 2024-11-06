@@ -38,7 +38,3 @@ pub async fn handler(event: CreateRequest, _: Context) -> Result<CreateResponse,
         message: format!("Item with id {} created.", event.id),
     })
 }
-
-// pub fn create_function() -> impl Fn(CreateRequest, Context) -> _ {
-//     handler_fn(handler)
-// }
