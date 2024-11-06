@@ -23,33 +23,43 @@ async fn function_handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
         .and_then(Value::as_str)
         .unwrap_or("{}");
 
-    match http_method {
+    let response = match http_method {
         "POST" => {
             let request: CreateRequest = serde_json::from_str(body)?;
             let response = create_handler(request, event.context).await?;
-            Ok(json!(response))
+            json!(response)
         }
         "GET" => {
             let request: ReadRequest = serde_json::from_str(body)?;
             let response = read_handler(request, event.context).await?;
-            Ok(json!(response))
+            json!(response)
         }
         "PUT" => {
             let request: UpdateRequest = serde_json::from_str(body)?;
             let lambda_event = LambdaEvent::new(request, event.context);
             let response = update_handler(lambda_event).await?;
-            Ok(json!(response))
+            json!(response)
         }
         "DELETE" => {
             let request: DeleteRequest = serde_json::from_str(body)?;
             let response = delete_handler(request, event.context).await?;
-            Ok(json!(response))
+            json!(response)
         }
-        _ => Err(Error::from(format!(
-            "Unsupported HTTP method: {}",
-            http_method
-        ))),
-    }
+        _ => {
+            return Err(Error::from(format!(
+                "Unsupported HTTP method: {}",
+                http_method
+            )))
+        }
+    };
+
+    Ok(json!({
+        "statusCode": 200,
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": serde_json::to_string(&response)?
+    }))
 }
 
 #[tokio::main]
