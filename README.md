@@ -2,6 +2,44 @@
 
 A robust serverless REST API built with Rust, AWS Lambda, and DynamoDB.
 
+## 📊 Architecture Diagram
+
+```mermaid
+graph LR
+    Client((Client))
+    AG[API Gateway]
+    LF[Lambda Function]
+    DB[(DynamoDB)]
+    IAM[IAM Role/Policy]
+
+    Client -->|HTTP Request| AG
+    AG -->|Proxy Integration| LF
+    LF -->|Assume Role| IAM
+    IAM -->|Grant Permissions| LF
+    LF -->|CRUD Operations| DB
+
+    subgraph AWS Cloud
+        AG
+        LF
+        DB
+        IAM
+    end
+
+    style Client fill:#f9f,stroke:#333,stroke-width:2px
+    style AG fill:#ff9,stroke:#333,stroke-width:2px
+    style LF fill:#9f9,stroke:#333,stroke-width:2px
+    style DB fill:#99f,stroke:#333,stroke-width:2px
+    style IAM fill:#f99,stroke:#333,stroke-width:2px
+```
+
+This diagram shows:
+
+1. Client making HTTP requests to API Gateway endpoints (from `main.tf` API Gateway configuration)
+2. API Gateway proxying requests to Lambda Function (defined in `aws_api_gateway_integration` resources)
+3. Lambda Function assuming IAM role (from `aws_iam_role` configuration)
+4. IAM role/policy granting permissions (from `aws_iam_policy` configuration)
+5. Lambda Function performing CRUD operations on DynamoDB (from the Rust handlers in `src/`)
+
 ## 🌟 Features
 
 - **Serverless Architecture**: Built on AWS Lambda and API Gateway
