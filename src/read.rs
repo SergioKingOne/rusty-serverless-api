@@ -26,7 +26,7 @@ pub async fn handler(event: ReadRequest, _: Context) -> Result<ReadResponse, Err
 
     let resp = client
         .get_item()
-        .table_name("RustyServerlessAPI")
+        .table_name("rusty-serverless-dynamodb-table")
         .set_key(Some(key))
         .send()
         .await

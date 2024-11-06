@@ -22,7 +22,7 @@ pub async fn handler(event: DeleteRequest, _: Context) -> Result<DeleteResponse,
 
     client
         .delete_item()
-        .table_name("RustyServerlessAPI")
+        .table_name("rusty-serverless-dynamodb-table")
         .key("id", AttributeValue::S(event.id.clone()))
         .send()
         .await

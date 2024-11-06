@@ -28,7 +28,7 @@ pub async fn handler(event: LambdaEvent<UpdateRequest>) -> Result<UpdateResponse
 
     client
         .update_item()
-        .table_name("RustyServerlessAPI")
+        .table_name("rusty-serverless-dynamodb-table")
         .key("id", AttributeValue::S(event.payload.id.clone()))
         .update_expression("SET data = :data")
         .set_expression_attribute_values(Some(expression_attribute_values))
