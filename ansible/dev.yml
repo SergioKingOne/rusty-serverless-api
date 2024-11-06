@@ -1,7 +1,7 @@
 ---
 - name: Setup Development Environment
-  hosts: dev
-  become: yes
+  hosts: localhost
+  become: no
   vars:
     project_root: "{{ playbook_dir }}/.."
     terraform_dir: "{{ project_root }}/terraform"
