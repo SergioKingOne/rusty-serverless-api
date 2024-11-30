@@ -1,12 +1,11 @@
 use lambda_runtime::{run, service_fn, Error, LambdaEvent};
-use serde_json::{json, Value};
-
 use rusty_serverless_api::{
     create::{handler as create_handler, CreateRequest},
     delete::{handler as delete_handler, DeleteRequest},
     read::{handler as read_handler, ReadRequest},
     update::{handler as update_handler, UpdateRequest},
 };
+use serde_json::{json, Value};
 
 async fn function_handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
     // Extract HTTP method from the event
@@ -30,7 +29,22 @@ async fn function_handler(event: LambdaEvent<Value>) -> Result<Value, Error> {
             json!(response)
         }
         "GET" => {
-            let request: ReadRequest = serde_json::from_str(body)?;
+            // Extract query parameters for GET
+            let query_params = event
+                .payload
+                .get("queryStringParameters")
+                .and_then(Value::as_object)
+                .ok_or_else(|| Error::from("Missing queryStringParameters"))?;
+
+            let id = query_params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or_else(|| Error::from("Missing 'id' query parameter"))?;
+
+            // Create ReadRequest from query parameters
+            let request = ReadRequest { id: id.to_string() };
+
+            // Call the read_handler
             let response = read_handler(request, event.context).await?;
             json!(response)
         }

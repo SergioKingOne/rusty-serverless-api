@@ -1,15 +1,13 @@
 use aws_config::BehaviorVersion;
 use aws_sdk_dynamodb::types::AttributeValue;
 use aws_sdk_dynamodb::{Client, Error as DynamoError};
-use lambda_runtime::Context;
+use lambda_runtime::{Context, Error as LambdaError};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use crate::error::Error;
-
 #[derive(Deserialize)]
 pub struct ReadRequest {
-    id: String,
+    pub id: String,
 }
 
 #[derive(Serialize)]
@@ -18,12 +16,18 @@ pub struct ReadResponse {
     data: String,
 }
 
-pub async fn handler(event: ReadRequest, _: Context) -> Result<ReadResponse, Error> {
+pub async fn handler(event: ReadRequest, _: Context) -> Result<ReadResponse, LambdaError> {
+    // Extract the `id` from query string parameters
+    let id = event.id;
+
+    // Set up the DynamoDB client
     let config = aws_config::load_defaults(BehaviorVersion::v2024_03_28()).await;
     let client = Client::new(&config);
 
-    let key = HashMap::from([("id".to_string(), AttributeValue::S(event.id.clone()))]);
+    // Create the DynamoDB key
+    let key = HashMap::from([("id".to_string(), AttributeValue::S(id.clone()))]);
 
+    // Query the DynamoDB table
     let resp = client
         .get_item()
         .table_name("rusty-serverless-dynamodb-table")
@@ -32,28 +36,15 @@ pub async fn handler(event: ReadRequest, _: Context) -> Result<ReadResponse, Err
         .await
         .map_err(DynamoError::from)?;
 
+    // Parse the response
     if let Some(item) = resp.item {
-        let id = item
-            .get("id")
-            .and_then(|v| v.as_s().ok())
-            .ok_or(Error::NotFound(format!(
-                "Item with id {} not found.",
-                event.id
-            )))?
-            .to_string();
         let data = item
             .get("data")
             .and_then(|v| v.as_s().ok())
-            .ok_or(Error::NotFound(format!(
-                "Item with id {} not found.",
-                event.id
-            )))?
+            .ok_or_else(|| LambdaError::from("Missing 'data' field in the item"))?
             .to_string();
         Ok(ReadResponse { id, data })
     } else {
-        Err(Error::NotFound(format!(
-            "Item with id {} not found.",
-            event.id
-        )))
+        Err(LambdaError::from(format!("Item with id {} not found.", id)))
     }
 }
